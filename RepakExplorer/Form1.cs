@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace RepakExplorer
 {
@@ -191,6 +192,10 @@ namespace RepakExplorer
 
         private void FileExplorer_ListView_ItemActivate(object sender, EventArgs e)
         {
+            if (FileExplorer_ListView.SelectedItems[0].ImageIndex != 0)
+            {
+                return;
+            }
             if (FileExplorer_PathLabel.Text == "Root")
             {
                 FileExplorer_PathLabel.Text = FileExplorer_ListView.SelectedItems[0].Text;
