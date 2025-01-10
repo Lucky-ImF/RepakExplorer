@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 
 namespace RepakExplorer
@@ -99,7 +100,14 @@ namespace RepakExplorer
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.FileName = "repak.exe";
-            p.StartInfo.Arguments = "list \"" + PakPath + "\"";
+            if (AESKey_TB.Text != "")
+            {
+                p.StartInfo.Arguments = "--aes-key " + AESKey_TB.Text + " list \"" + PakPath + "\"";
+            }
+            else
+            {
+                p.StartInfo.Arguments = "list \"" + PakPath + "\"";
+            }
             p.Start();
             string output = p.StandardOutput.ReadToEnd();
             string error = p.StandardError.ReadToEnd();
@@ -188,7 +196,7 @@ namespace RepakExplorer
                             }
                             else
                             {
-                               item.ImageIndex = 4;
+                                item.ImageIndex = 4;
                             }
                             FileExplorer_ListView.Items.Add(item);
                         }
@@ -252,7 +260,14 @@ namespace RepakExplorer
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.FileName = "repak.exe";
-            p.StartInfo.Arguments = "info \"" + LoadedPakPath + "\"";
+            if (AESKey_TB.Text != "")
+            {
+                p.StartInfo.Arguments = "--aes-key " + AESKey_TB.Text + " info \"" + LoadedPakPath + "\"";
+            }
+            else
+            {
+                p.StartInfo.Arguments = "info \"" + LoadedPakPath + "\"";
+            }
             p.Start();
             string output = p.StandardOutput.ReadToEnd();
             string error = p.StandardError.ReadToEnd();
@@ -280,7 +295,14 @@ namespace RepakExplorer
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.FileName = "repak.exe";
-            p.StartInfo.Arguments = "hash-list \"" + LoadedPakPath + "\"";
+            if (AESKey_TB.Text != "")
+            {
+                p.StartInfo.Arguments = "--aes-key " + AESKey_TB.Text + " hash-list \"" + LoadedPakPath + "\"";
+            }
+            else
+            {
+                p.StartInfo.Arguments = "hash-list \"" + LoadedPakPath + "\"";
+            }
             p.Start();
             string output = p.StandardOutput.ReadToEnd();
             string error = p.StandardError.ReadToEnd();
@@ -312,7 +334,14 @@ namespace RepakExplorer
                 p.StartInfo.RedirectStandardOutput = true;
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.FileName = "repak.exe";
-                p.StartInfo.Arguments = "unpack -v -o \"" + folderBrowserDialog1.SelectedPath + @"\" + Path.GetFileNameWithoutExtension(LoadedPakPath) + "\" \"" + LoadedPakPath + "\"";
+                if (AESKey_TB.Text != "")
+                {
+                    p.StartInfo.Arguments = "--aes-key " + AESKey_TB.Text + " unpack -v -o \"" + folderBrowserDialog1.SelectedPath + @"\" + Path.GetFileNameWithoutExtension(LoadedPakPath) + "\" \"" + LoadedPakPath + "\"";
+                }
+                else
+                {
+                    p.StartInfo.Arguments = "unpack -v -o \"" + folderBrowserDialog1.SelectedPath + @"\" + Path.GetFileNameWithoutExtension(LoadedPakPath) + "\" \"" + LoadedPakPath + "\"";
+                }
                 p.Start();
                 string output = p.StandardOutput.ReadToEnd();
                 string error = p.StandardError.ReadToEnd();
@@ -389,12 +418,35 @@ namespace RepakExplorer
                 {
                     FileName = FileName + "_P";
                 }
+
+                string Args = string.Empty;
+                string MountPoint = string.Empty;
+                if (DirActs_MountPoint.Text != "../../../")
+                {
+                    MountPoint = "--mount-point " + DirActs_MountPoint.Text;
+                    Args += MountPoint + " ";
+                }
+                string Compression = string.Empty;
                 if (DirActs_Compression.Text != "None")
                 {
-                    p.StartInfo.Arguments = "pack -v --compression " + DirActs_Compression.Text + " \"" + LoadedDirPath + "\" \"" + folderBrowserDialog1.SelectedPath + @"\" + FileName + ".pak\"";
+                    Compression = "--compression " + DirActs_Compression.Text;
+                    Args += Compression + " ";
+                }
+                string Version = string.Empty;
+                if (DirActs_Version.Text != "V8B")
+                {
+                    Version = "--version " + DirActs_Version.Text;
+                    Args += Version + " ";
+                }
+
+                if (Args != string.Empty)
+                {
+                    Console_TB.AppendText("Packing with arguments: " + Args + Environment.NewLine);
+                    p.StartInfo.Arguments = "pack -v " + Args + "\"" + LoadedDirPath + "\" \"" + folderBrowserDialog1.SelectedPath + @"\" + FileName + ".pak\"";
                 }
                 else
                 {
+                    Console_TB.AppendText("Packing with default arguments." + Environment.NewLine);
                     p.StartInfo.Arguments = "pack -v \"" + LoadedDirPath + "\" \"" + folderBrowserDialog1.SelectedPath + @"\" + FileName + ".pak\"";
                 }
                 p.Start();
@@ -421,6 +473,48 @@ namespace RepakExplorer
         private void RepakLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("explorer.exe", RepakLink.Text);
+        }
+
+        private void PakActs_UnpackSelected_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog1.Description = "Select a folder to unpack the selected files to.";
+            folderBrowserDialog1.InitialDirectory = Path.GetDirectoryName(LoadedPakPath);
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                Console_TB.Clear();
+                Console_GB.Show();
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.FileName = "repak.exe";
+
+                string Args = string.Empty;
+                foreach (ListViewItem file in FileExplorer_ListView.SelectedItems)
+                {
+                    Args += "-i \"" + FileExplorer_PathLabel.Text + "/" + file.Text + "\" ";
+                }
+
+                p.StartInfo.Arguments = "unpack -v " + Args + "-o \"" + folderBrowserDialog1.SelectedPath + @"\" + Path.GetFileNameWithoutExtension(LoadedPakPath) + "\" \"" + LoadedPakPath + "\"";
+                p.Start();
+                string output = p.StandardOutput.ReadToEnd();
+                string error = p.StandardError.ReadToEnd();
+                p.WaitForExit();
+
+                string[] lines = output.Split(new string[] { "\r\n", "\r", "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string line in lines)
+                {
+                    Console_TB.AppendText(line + Environment.NewLine);
+                }
+                lines = error.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string line in lines)
+                {
+                    Console_TB.AppendText("ERROR: " + line + Environment.NewLine);
+                }
+                p.Dispose();
+
+                Process.Start("explorer.exe", folderBrowserDialog1.SelectedPath + @"\" + Path.GetFileNameWithoutExtension(LoadedPakPath));
+            }
         }
     }
 }

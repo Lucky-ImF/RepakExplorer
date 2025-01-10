@@ -40,6 +40,7 @@
             DropLabel = new Label();
             DropSpot = new Panel();
             PakActs_GB = new GroupBox();
+            PakActs_UnpackSelected = new Button();
             PakActs_Unload = new Button();
             PakActs_Info = new Button();
             PakActs_ListHash = new Button();
@@ -48,6 +49,10 @@
             Console_TB = new TextBox();
             folderBrowserDialog1 = new FolderBrowserDialog();
             DirActs_GB = new GroupBox();
+            label4 = new Label();
+            DirActs_MountPoint = new TextBox();
+            label3 = new Label();
+            DirActs_Version = new ComboBox();
             DirActs_Unload = new Button();
             DirActs_AppendP = new CheckBox();
             label1 = new Label();
@@ -56,6 +61,8 @@
             Blocker = new Panel();
             RepakLink = new LinkLabel();
             label2 = new Label();
+            label5 = new Label();
+            AESKey_TB = new TextBox();
             FileExplorer_GB.SuspendLayout();
             PakActs_GB.SuspendLayout();
             Console_GB.SuspendLayout();
@@ -183,6 +190,7 @@
             // PakActs_GB
             // 
             PakActs_GB.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            PakActs_GB.Controls.Add(PakActs_UnpackSelected);
             PakActs_GB.Controls.Add(PakActs_Unload);
             PakActs_GB.Controls.Add(PakActs_Info);
             PakActs_GB.Controls.Add(PakActs_ListHash);
@@ -196,11 +204,23 @@
             PakActs_GB.Text = "Pak Actions";
             PakActs_GB.Visible = false;
             // 
+            // PakActs_UnpackSelected
+            // 
+            PakActs_UnpackSelected.FlatStyle = FlatStyle.Popup;
+            PakActs_UnpackSelected.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            PakActs_UnpackSelected.Location = new Point(160, 22);
+            PakActs_UnpackSelected.Name = "PakActs_UnpackSelected";
+            PakActs_UnpackSelected.Size = new Size(136, 32);
+            PakActs_UnpackSelected.TabIndex = 6;
+            PakActs_UnpackSelected.Text = "Unpack Selected";
+            PakActs_UnpackSelected.UseVisualStyleBackColor = true;
+            PakActs_UnpackSelected.Click += PakActs_UnpackSelected_Click;
+            // 
             // PakActs_Unload
             // 
             PakActs_Unload.FlatStyle = FlatStyle.Popup;
             PakActs_Unload.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            PakActs_Unload.Location = new Point(545, 22);
+            PakActs_Unload.Location = new Point(637, 22);
             PakActs_Unload.Name = "PakActs_Unload";
             PakActs_Unload.Size = new Size(122, 32);
             PakActs_Unload.TabIndex = 5;
@@ -212,9 +232,9 @@
             // 
             PakActs_Info.FlatStyle = FlatStyle.Popup;
             PakActs_Info.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            PakActs_Info.Location = new Point(264, 22);
+            PakActs_Info.Location = new Point(369, 22);
             PakActs_Info.Name = "PakActs_Info";
-            PakActs_Info.Size = new Size(122, 32);
+            PakActs_Info.Size = new Size(85, 32);
             PakActs_Info.TabIndex = 2;
             PakActs_Info.Text = "Info";
             PakActs_Info.UseVisualStyleBackColor = true;
@@ -224,7 +244,7 @@
             // 
             PakActs_ListHash.FlatStyle = FlatStyle.Popup;
             PakActs_ListHash.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            PakActs_ListHash.Location = new Point(392, 22);
+            PakActs_ListHash.Location = new Point(460, 22);
             PakActs_ListHash.Name = "PakActs_ListHash";
             PakActs_ListHash.Size = new Size(122, 32);
             PakActs_ListHash.TabIndex = 1;
@@ -236,11 +256,11 @@
             // 
             PakActs_Unpack.FlatStyle = FlatStyle.Popup;
             PakActs_Unpack.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            PakActs_Unpack.Location = new Point(111, 22);
+            PakActs_Unpack.Location = new Point(32, 22);
             PakActs_Unpack.Name = "PakActs_Unpack";
             PakActs_Unpack.Size = new Size(122, 32);
             PakActs_Unpack.TabIndex = 0;
-            PakActs_Unpack.Text = "Unpack";
+            PakActs_Unpack.Text = "Unpack All";
             PakActs_Unpack.UseVisualStyleBackColor = true;
             PakActs_Unpack.Click += PakActs_Unpack_Click;
             // 
@@ -276,6 +296,10 @@
             // DirActs_GB
             // 
             DirActs_GB.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            DirActs_GB.Controls.Add(label4);
+            DirActs_GB.Controls.Add(DirActs_MountPoint);
+            DirActs_GB.Controls.Add(label3);
+            DirActs_GB.Controls.Add(DirActs_Version);
             DirActs_GB.Controls.Add(DirActs_Unload);
             DirActs_GB.Controls.Add(DirActs_AppendP);
             DirActs_GB.Controls.Add(label1);
@@ -290,11 +314,54 @@
             DirActs_GB.Text = "Directory Actions";
             DirActs_GB.Visible = false;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(270, 44);
+            label4.Name = "label4";
+            label4.Size = new Size(77, 15);
+            label4.TabIndex = 8;
+            label4.Text = "Mount Point:";
+            // 
+            // DirActs_MountPoint
+            // 
+            DirActs_MountPoint.BackColor = Color.FromArgb(64, 64, 64);
+            DirActs_MountPoint.BorderStyle = BorderStyle.FixedSingle;
+            DirActs_MountPoint.ForeColor = Color.Orange;
+            DirActs_MountPoint.Location = new Point(353, 40);
+            DirActs_MountPoint.Name = "DirActs_MountPoint";
+            DirActs_MountPoint.Size = new Size(258, 23);
+            DirActs_MountPoint.TabIndex = 7;
+            DirActs_MountPoint.Text = "../../../";
+            DirActs_MountPoint.TextAlign = HorizontalAlignment.Center;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(467, 18);
+            label3.Name = "label3";
+            label3.Size = new Size(48, 15);
+            label3.TabIndex = 6;
+            label3.Text = "Version:";
+            // 
+            // DirActs_Version
+            // 
+            DirActs_Version.BackColor = Color.FromArgb(64, 64, 64);
+            DirActs_Version.FlatStyle = FlatStyle.Popup;
+            DirActs_Version.ForeColor = Color.Orange;
+            DirActs_Version.FormattingEnabled = true;
+            DirActs_Version.Items.AddRange(new object[] { "V0", "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8A", "V8B", "V9", "V10", "V11" });
+            DirActs_Version.Location = new Point(521, 15);
+            DirActs_Version.Name = "DirActs_Version";
+            DirActs_Version.Size = new Size(90, 23);
+            DirActs_Version.TabIndex = 5;
+            DirActs_Version.Text = "V8B";
+            // 
             // DirActs_Unload
             // 
             DirActs_Unload.FlatStyle = FlatStyle.Popup;
             DirActs_Unload.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            DirActs_Unload.Location = new Point(563, 23);
+            DirActs_Unload.Location = new Point(637, 22);
             DirActs_Unload.Name = "DirActs_Unload";
             DirActs_Unload.Size = new Size(122, 32);
             DirActs_Unload.TabIndex = 4;
@@ -307,7 +374,7 @@
             DirActs_AppendP.AutoSize = true;
             DirActs_AppendP.Checked = true;
             DirActs_AppendP.CheckState = CheckState.Checked;
-            DirActs_AppendP.Location = new Point(449, 31);
+            DirActs_AppendP.Location = new Point(170, 30);
             DirActs_AppendP.Name = "DirActs_AppendP";
             DirActs_AppendP.Size = new Size(83, 19);
             DirActs_AppendP.TabIndex = 3;
@@ -317,7 +384,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(245, 32);
+            label1.Location = new Point(267, 18);
             label1.Name = "label1";
             label1.Size = new Size(80, 15);
             label1.TabIndex = 2;
@@ -330,7 +397,7 @@
             DirActs_Compression.ForeColor = Color.Orange;
             DirActs_Compression.FormattingEnabled = true;
             DirActs_Compression.Items.AddRange(new object[] { "None", "Zlib", "Gzip", "Zstd" });
-            DirActs_Compression.Location = new Point(331, 28);
+            DirActs_Compression.Location = new Point(353, 15);
             DirActs_Compression.Name = "DirActs_Compression";
             DirActs_Compression.Size = new Size(90, 23);
             DirActs_Compression.TabIndex = 1;
@@ -340,7 +407,7 @@
             // 
             DirActs_Package.FlatStyle = FlatStyle.Popup;
             DirActs_Package.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            DirActs_Package.Location = new Point(93, 23);
+            DirActs_Package.Location = new Point(32, 23);
             DirActs_Package.Name = "DirActs_Package";
             DirActs_Package.Size = new Size(122, 32);
             DirActs_Package.TabIndex = 0;
@@ -353,7 +420,7 @@
             Blocker.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             Blocker.Controls.Add(RepakLink);
             Blocker.Controls.Add(label2);
-            Blocker.Location = new Point(2, 3);
+            Blocker.Location = new Point(2, 2);
             Blocker.Name = "Blocker";
             Blocker.Size = new Size(796, 669);
             Blocker.TabIndex = 7;
@@ -384,6 +451,31 @@
             label2.TabIndex = 0;
             label2.Text = "repak.exe missing";
             // 
+            // label5
+            // 
+            label5.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            label5.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label5.ForeColor = Color.Orange;
+            label5.Location = new Point(5, 9);
+            label5.Name = "label5";
+            label5.Size = new Size(790, 26);
+            label5.TabIndex = 10;
+            label5.Text = "AES Key:";
+            label5.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // AESKey_TB
+            // 
+            AESKey_TB.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            AESKey_TB.BackColor = Color.FromArgb(64, 64, 64);
+            AESKey_TB.BorderStyle = BorderStyle.FixedSingle;
+            AESKey_TB.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            AESKey_TB.ForeColor = Color.Orange;
+            AESKey_TB.Location = new Point(12, 35);
+            AESKey_TB.Name = "AESKey_TB";
+            AESKey_TB.Size = new Size(778, 29);
+            AESKey_TB.TabIndex = 9;
+            AESKey_TB.TextAlign = HorizontalAlignment.Center;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -397,6 +489,8 @@
             Controls.Add(FileExplorer_GB);
             Controls.Add(DropLabel);
             Controls.Add(DropSpot);
+            Controls.Add(label5);
+            Controls.Add(AESKey_TB);
             FormBorderStyle = FormBorderStyle.SizableToolWindow;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
@@ -444,5 +538,12 @@
         private Panel Blocker;
         private LinkLabel RepakLink;
         private Label label2;
+        private Label label3;
+        private ComboBox DirActs_Version;
+        private Label label4;
+        private TextBox DirActs_MountPoint;
+        private Button PakActs_UnpackSelected;
+        private Label label5;
+        private TextBox AESKey_TB;
     }
 }
