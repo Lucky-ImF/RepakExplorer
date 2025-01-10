@@ -32,20 +32,23 @@ namespace RepakExplorer
         private void DropSpot_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            if (files[0].ToLower().EndsWith(".pak"))
+            string ext = Path.GetExtension(files[0].ToLower());
+            if (ext == ".pak")
             {
                 LoadedPakPath = files[0];
-                //Debug.WriteLine("LoadedPakPath: " + LoadedPakPath);
                 Pak_ListFiles(LoadedPakPath);
                 LoadedFilePath_Label.Text = LoadedPakPath;
             }
-            else
+            else if (ext == "")
             {
                 LoadedDirPath = files[0];
-                //Debug.WriteLine("LoadedDirPath: " + LoadedDirPath);
                 Dir_ListFiles(LoadedDirPath);
                 LoadedFilePath_Label.Text = LoadedDirPath;
+            }
+            else
+            {
+                MessageBox.Show("Invalid file type. Please drop a .pak or a folder.", "Repak Explorer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DropSpot.BorderStyle = BorderStyle.FixedSingle;
             }
         }
 
@@ -66,6 +69,7 @@ namespace RepakExplorer
             FilesLoaded.Clear();
             Console_TB.Clear();
             Console_GB.Show();
+            FileExplorer_PathLabel.Text = "Root";
 
             string[] files = Directory.GetFiles(DirPath, "*", SearchOption.AllDirectories);
             foreach (string file in files)
@@ -73,7 +77,6 @@ namespace RepakExplorer
                 string CleanPath = GetSlice(file, DirPath, 1).Remove(0, 1);
                 CleanPath = CleanPath.Replace("\\", "/");
                 FilesLoaded.Add(CleanPath);
-                Debug.WriteLine(CleanPath);
                 Console_TB.AppendText(CleanPath + "\n\r");
             }
 
@@ -89,6 +92,7 @@ namespace RepakExplorer
             FilesLoaded.Clear();
             Console_TB.Clear();
             Console_GB.Show();
+            FileExplorer_PathLabel.Text = "Root";
 
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
@@ -101,22 +105,16 @@ namespace RepakExplorer
             string error = p.StandardError.ReadToEnd();
             p.WaitForExit();
 
-            string[] lines = output.Split("\n", StringSplitOptions.None);
+            string[] lines = output.Split(new string[] { "\r\n", "\r", "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
-                if (line != "")
-                {
-                    FilesLoaded.Add(line);
-                    Console_TB.AppendText(line + "\n\r");
-                }
+                FilesLoaded.Add(line);
+                Console_TB.AppendText(line + Environment.NewLine);
             }
-            lines = error.Split("\n", StringSplitOptions.None);
+            lines = error.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
-                if (line != "")
-                {
-                    Console_TB.AppendText("ERROR: " + line + "\n\r");
-                }
+                Console_TB.AppendText("ERROR: " + line + Environment.NewLine);
             }
             p.Dispose();
 
@@ -132,6 +130,7 @@ namespace RepakExplorer
             {
                 if (FileExplorer_PathLabel.Text == "Root")
                 {
+                    FileExplorer_GoBack.Enabled = false;
                     if (FileExplorer_ListView.Items.ContainsKey(GetSlice(file, "/", 0)) == false)
                     {
                         ListViewItem item = new ListViewItem();
@@ -150,9 +149,13 @@ namespace RepakExplorer
                         {
                             item.ImageIndex = 3;
                         }
-                        else
+                        else if (ext == "")
                         {
                             item.ImageIndex = 0;
+                        }
+                        else
+                        {
+                            item.ImageIndex = 4;
                         }
                         FileExplorer_ListView.Items.Add(item);
                     }
@@ -179,9 +182,13 @@ namespace RepakExplorer
                             {
                                 item.ImageIndex = 3;
                             }
-                            else
+                            else if (ext == "")
                             {
                                 item.ImageIndex = 0;
+                            }
+                            else
+                            {
+                               item.ImageIndex = 4;
                             }
                             FileExplorer_ListView.Items.Add(item);
                         }
@@ -200,11 +207,13 @@ namespace RepakExplorer
             {
                 FileExplorer_PathLabel.Text = FileExplorer_ListView.SelectedItems[0].Text;
                 Depth = 1;
+                FileExplorer_GoBack.Enabled = true;
             }
             else
             {
                 FileExplorer_PathLabel.Text += "/" + FileExplorer_ListView.SelectedItems[0].Text;
                 Depth++;
+                FileExplorer_GoBack.Enabled = true;
             }
             UpdateFilesList();
         }
@@ -214,6 +223,7 @@ namespace RepakExplorer
             Depth = 0;
             FileExplorer_PathLabel.Text = "Root";
             UpdateFilesList();
+            FileExplorer_GoBack.Enabled = false;
         }
 
         private void FileExplorer_GoBack_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -222,6 +232,7 @@ namespace RepakExplorer
             {
                 Depth = 0;
                 FileExplorer_PathLabel.Text = "Root";
+                FileExplorer_GoBack.Enabled = false;
                 UpdateFilesList();
             }
             else
@@ -247,21 +258,15 @@ namespace RepakExplorer
             string error = p.StandardError.ReadToEnd();
             p.WaitForExit();
 
-            string[] lines = output.Split("\n", StringSplitOptions.None);
+            string[] lines = output.Split(new string[] { "\r\n", "\r", "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
-                if (line != "")
-                {
-                    Console_TB.AppendText(line + "\n\r");
-                }
+                Console_TB.AppendText(line + Environment.NewLine);
             }
-            lines = error.Split("\n", StringSplitOptions.None);
+            lines = error.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
-                if (line != "")
-                {
-                    Console_TB.AppendText("ERROR: " + line + "\n\r");
-                }
+                Console_TB.AppendText("ERROR: " + line + Environment.NewLine);
             }
             p.Dispose();
         }
@@ -281,21 +286,15 @@ namespace RepakExplorer
             string error = p.StandardError.ReadToEnd();
             p.WaitForExit();
 
-            string[] lines = output.Split("\n", StringSplitOptions.None);
+            string[] lines = output.Split(new string[] { "\r\n", "\r", "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
-                if (line != "")
-                {
-                    Console_TB.AppendText(line + "\n\r");
-                }
+                Console_TB.AppendText(line + Environment.NewLine);
             }
-            lines = error.Split("\n", StringSplitOptions.None);
+            lines = error.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
             {
-                if (line != "")
-                {
-                    Console_TB.AppendText("ERROR: " + line + "\n\r");
-                }
+                Console_TB.AppendText("ERROR: " + line + Environment.NewLine);
             }
             p.Dispose();
         }
@@ -319,21 +318,15 @@ namespace RepakExplorer
                 string error = p.StandardError.ReadToEnd();
                 p.WaitForExit();
 
-                string[] lines = output.Split("\n", StringSplitOptions.None);
+                string[] lines = output.Split(new string[] { "\r\n", "\r", "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines)
                 {
-                    if (line != "")
-                    {
-                        Console_TB.AppendText(line + "\n\r");
-                    }
+                    Console_TB.AppendText(line + Environment.NewLine);
                 }
-                lines = error.Split("\n", StringSplitOptions.None);
+                lines = error.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines)
                 {
-                    if (line != "")
-                    {
-                        Console_TB.AppendText("ERROR: " + line + "\n\r");
-                    }
+                    Console_TB.AppendText("ERROR: " + line + Environment.NewLine);
                 }
                 p.Dispose();
 
@@ -409,21 +402,15 @@ namespace RepakExplorer
                 string error = p.StandardError.ReadToEnd();
                 p.WaitForExit();
 
-                string[] lines = output.Split("\n", StringSplitOptions.None);
+                string[] lines = output.Split(new string[] { "\r\n", "\r", "\n", Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines)
                 {
-                    if (line != "")
-                    {
-                        Console_TB.AppendText(line + "\n\r");
-                    }
+                    Console_TB.AppendText(line + Environment.NewLine);
                 }
-                lines = error.Split("\n", StringSplitOptions.None);
+                lines = error.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string line in lines)
                 {
-                    if (line != "")
-                    {
-                        Console_TB.AppendText("ERROR: " + line + "\n\r");
-                    }
+                    Console_TB.AppendText("ERROR: " + line + Environment.NewLine);
                 }
                 p.Dispose();
 

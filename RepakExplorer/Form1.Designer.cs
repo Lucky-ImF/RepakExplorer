@@ -150,6 +150,7 @@
             imageList1.Images.SetKeyName(1, "Icon_uasset.png");
             imageList1.Images.SetKeyName(2, "Icon_uexp.png");
             imageList1.Images.SetKeyName(3, "Icon_ubulk.png");
+            imageList1.Images.SetKeyName(4, "Icon_file.png");
             // 
             // DropLabel
             // 
