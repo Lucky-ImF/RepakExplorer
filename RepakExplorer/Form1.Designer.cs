@@ -495,7 +495,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Repak Explorer - v.1.0";
+            Text = "Repak Explorer - v.1.1";
             Load += Form1_Load;
             FileExplorer_GB.ResumeLayout(false);
             FileExplorer_GB.PerformLayout();

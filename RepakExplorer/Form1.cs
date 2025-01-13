@@ -477,6 +477,12 @@ namespace RepakExplorer
 
         private void PakActs_UnpackSelected_Click(object sender, EventArgs e)
         {
+            if (FileExplorer_ListView.SelectedItems.Count == 0)
+            {
+                MessageBox.Show("No files/folders selected.", "Repak Explorer", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             folderBrowserDialog1.Description = "Select a folder to unpack the selected files to.";
             folderBrowserDialog1.InitialDirectory = Path.GetDirectoryName(LoadedPakPath);
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
