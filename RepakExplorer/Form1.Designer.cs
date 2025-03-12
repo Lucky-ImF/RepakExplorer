@@ -31,6 +31,7 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             FileExplorer_GB = new GroupBox();
+            SelectedFile_Panel = new Panel();
             LoadedFilePath_Label = new Label();
             FileExplorer_GoBack = new LinkLabel();
             FileExplorer_GoToRoot = new LinkLabel();
@@ -63,7 +64,9 @@
             label2 = new Label();
             label5 = new Label();
             AESKey_TB = new TextBox();
+            SelectedFile_Label = new Label();
             FileExplorer_GB.SuspendLayout();
+            SelectedFile_Panel.SuspendLayout();
             PakActs_GB.SuspendLayout();
             Console_GB.SuspendLayout();
             DirActs_GB.SuspendLayout();
@@ -73,6 +76,7 @@
             // FileExplorer_GB
             // 
             FileExplorer_GB.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            FileExplorer_GB.Controls.Add(SelectedFile_Panel);
             FileExplorer_GB.Controls.Add(LoadedFilePath_Label);
             FileExplorer_GB.Controls.Add(FileExplorer_GoBack);
             FileExplorer_GB.Controls.Add(FileExplorer_GoToRoot);
@@ -86,6 +90,16 @@
             FileExplorer_GB.TabStop = false;
             FileExplorer_GB.Text = "File Explorer";
             FileExplorer_GB.Visible = false;
+            // 
+            // SelectedFile_Panel
+            // 
+            SelectedFile_Panel.BorderStyle = BorderStyle.FixedSingle;
+            SelectedFile_Panel.Controls.Add(SelectedFile_Label);
+            SelectedFile_Panel.Location = new Point(47, 36);
+            SelectedFile_Panel.Name = "SelectedFile_Panel";
+            SelectedFile_Panel.Size = new Size(687, 15);
+            SelectedFile_Panel.TabIndex = 5;
+            SelectedFile_Panel.Visible = false;
             // 
             // LoadedFilePath_Label
             // 
@@ -420,7 +434,7 @@
             Blocker.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             Blocker.Controls.Add(RepakLink);
             Blocker.Controls.Add(label2);
-            Blocker.Location = new Point(2, 2);
+            Blocker.Location = new Point(765, 9);
             Blocker.Name = "Blocker";
             Blocker.Size = new Size(796, 669);
             Blocker.TabIndex = 7;
@@ -476,6 +490,15 @@
             AESKey_TB.TabIndex = 9;
             AESKey_TB.TextAlign = HorizontalAlignment.Center;
             // 
+            // SelectedFile_Label
+            // 
+            SelectedFile_Label.AutoSize = true;
+            SelectedFile_Label.Location = new Point(3, -1);
+            SelectedFile_Label.Name = "SelectedFile_Label";
+            SelectedFile_Label.Size = new Size(69, 15);
+            SelectedFile_Label.TabIndex = 2;
+            SelectedFile_Label.Text = "SelectedFile";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -499,6 +522,8 @@
             Load += Form1_Load;
             FileExplorer_GB.ResumeLayout(false);
             FileExplorer_GB.PerformLayout();
+            SelectedFile_Panel.ResumeLayout(false);
+            SelectedFile_Panel.PerformLayout();
             PakActs_GB.ResumeLayout(false);
             Console_GB.ResumeLayout(false);
             Console_GB.PerformLayout();
@@ -545,5 +570,7 @@
         private Button PakActs_UnpackSelected;
         private Label label5;
         private TextBox AESKey_TB;
+        private Panel SelectedFile_Panel;
+        private Label SelectedFile_Label;
     }
 }

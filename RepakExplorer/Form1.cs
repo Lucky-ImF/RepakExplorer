@@ -207,8 +207,41 @@ namespace RepakExplorer
 
         private void FileExplorer_ListView_ItemActivate(object sender, EventArgs e)
         {
-            if (FileExplorer_ListView.SelectedItems[0].ImageIndex != 0)
+            if (FileExplorer_ListView.SelectedItems[0].ImageIndex != 0 && LoadedPakPath != "")
             {
+                Process p = new Process();
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.FileName = "repak.exe";
+
+                string Args = string.Empty;
+                foreach (ListViewItem file in FileExplorer_ListView.SelectedItems)
+                {
+                    Args = FileExplorer_PathLabel.Text.Replace("/",@"\") + @"\" + FileExplorer_ListView.SelectedItems[0].Text;
+                }
+
+                p.StartInfo.Arguments = "get \"" + LoadedPakPath + "\" \"" + Args + "\"";
+                p.Start();
+                string output = p.StandardOutput.ReadToEnd();
+                string error = p.StandardError.ReadToEnd();
+                p.WaitForExit();
+                SelectedFile_Panel.Show();
+                SelectedFile_Label.Text = FileExplorer_ListView.SelectedItems[0].Text + " | Size: " + GetFileSize(output.Length) + " (" + output.Length + " bytes)";
+                Console_TB.AppendText(FileExplorer_ListView.SelectedItems[0].Text + " | Size: " + GetFileSize(output.Length) + " (" + output.Length + " bytes)" + Environment.NewLine);
+                if (error != "")
+                {
+                    Console_TB.AppendText(error + Environment.NewLine);
+                }
+                return;
+            }
+            else if (FileExplorer_ListView.SelectedItems[0].ImageIndex != 0 && LoadedDirPath != "")
+            {
+                // Get size of file
+                FileInfo info = new FileInfo(LoadedDirPath + @"\" + FileExplorer_PathLabel.Text.Replace("/", @"\") + @"\" + FileExplorer_ListView.SelectedItems[0].Text);
+                SelectedFile_Panel.Show();
+                SelectedFile_Label.Text = FileExplorer_ListView.SelectedItems[0].Text + " | Size: " + GetFileSize(info.Length) + " (" + info.Length + " bytes)";
+                Console_TB.AppendText(FileExplorer_ListView.SelectedItems[0].Text + " | Size: " + GetFileSize(info.Length) + " (" + info.Length + " bytes)" + Environment.NewLine);
                 return;
             }
             if (FileExplorer_PathLabel.Text == "Root")
@@ -224,6 +257,21 @@ namespace RepakExplorer
                 FileExplorer_GoBack.Enabled = true;
             }
             UpdateFilesList();
+        }
+
+        private string GetFileSize(double byteCount)
+        {
+            string size = "0 Bytes";
+            if (byteCount >= 1073741824.0)
+                size = String.Format("{0:##.##}", byteCount / 1073741824.0) + " GB";
+            else if (byteCount >= 1048576.0)
+                size = String.Format("{0:##.##}", byteCount / 1048576.0) + " MB";
+            else if (byteCount >= 1024.0)
+                size = String.Format("{0:##.##}", byteCount / 1024.0) + " KB";
+            else if (byteCount > 0 && byteCount < 1024.0)
+                size = byteCount.ToString() + " Bytes";
+
+            return size;
         }
 
         private void FileExplorer_GoToRoot_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -375,6 +423,7 @@ namespace RepakExplorer
         private void DirActs_Unload_Click(object sender, EventArgs e)
         {
             Console_TB.Text = "Unloaded " + Path.GetFileName(LoadedDirPath) + ".";
+            SelectedFile_Panel.Hide();
 
             LoadedPakPath = "";
             LoadedDirPath = "";
@@ -389,6 +438,7 @@ namespace RepakExplorer
         private void PakActs_Unload_Click(object sender, EventArgs e)
         {
             Console_TB.Text = "Unloaded " + Path.GetFileName(LoadedPakPath) + ".";
+            SelectedFile_Panel.Hide();
 
             LoadedPakPath = "";
             LoadedDirPath = "";
